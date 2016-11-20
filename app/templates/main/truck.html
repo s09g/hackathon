@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %} Truck Dashboard {% endblock %}
+
+
+{% block page_content %}
+<h1>
+    Hello,
+    {{ current_user.username  | capitalize }}.
+    <h4>You have 30 tasks today, 15 from inbound and 15 from outbound.</h4>
+</h1>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<ul id="myTab" class="nav nav-tabs">
+	<li class="active"><a href="#inbound" data-toggle="tab">
+		inbound</a></li>
+	<li><a href="#outbound" data-toggle="tab">outbound</a></li>
+</ul>
+<div id="myTabContent" class="tab-content">
+	<div class="tab-pane fade in active" id="inbound">
+        <div class="table-responsive">
+            <table class="table table-striped" id="inbound-table">
+            </table>
+<script>
+    $(function () {
+        $.getJSON('/truck/inbound', function(result){
+            var table = '<table class="table table-striped"></table>';
+            var table_head =
+                '<thead>\
+                    <tr>\
+                        <th>Cargo #</th>\
+                        <th>Container Size Type</th>\
+                        <th>Expected Availability</th>\
+                        <th>Quantity</th>\
+                        <th>Inland Point</th>\
+                        <th>Load Port</th>\
+                         <th>Unload Port</th> \
+                        <th>Detail</th>\
+                    </tr>\
+                </thead>';
+
+            data = result['data']
+            var tr_list = [];
+
+            for (var i = 0; i< data.length; i++){
+                var record = data[i];
+                var td1 = '<td>'+record['Container #'].substr(4)+'</td>';
+                var td2 = '<td>'+record['Container Size Type']+'</td>';
+                var td3 = '<td>'+record['Expected Availability']+'</td>';
+                var td4 = '<td>'+record['Quantity']+'</td>';
+                var td5 = '<td>'+record['Inland Point']+'</td>';
+                var td6 = '<td>'+record['Load Port']+'</td>';
+                var td7 = '<td>'+record['Unload Port']+'</td>';
+                var bt = '<td><a href="/truck/id/' + record['Container #'].substr(4) + '"><button type="button" class="btn btn-info">detail</button></a></td>'
+                var tr = '<tr>'+td1+td2+td3+td4+td5+td6+td7+bt+'</tr>';
+                tr_list.push(tr);
+            }
+
+            var inbound_table = $("#inbound-table");
+            inbound_table.html(table);
+            inbound_table.append(table_head);
+            for (var i=0;i<tr_list.length;i++){
+                inbound_table.append(tr_list[i]);
+            }
+        })
+    })
+</script>
+
+        </div>
+	</div>
+	<div class="tab-pane fade" id="outbound">
+        <div class="table-responsive">
+            <table class="table table-striped" id="outbound-table">
+            </table>
+<script>
+    $(function () {
+        $.getJSON('/truck/outbound', function(result){
+            var table = '<table class="table table-striped"></table>';
+            var table_head =
+                '<thead>\
+                    <tr>\
+                        <th>Cargo #</th>\
+                        <th>Container Size Type</th>\
+                        <th>Quantity</th>\
+                        <th>Inland Point</th>\
+                        <th>Load Port</th>\
+                        <th>Unload Port</th>\
+                        <th>Detail</th>\
+                    </tr>\
+                </thead>';
+
+            data = result['data']
+            var tr_list = [];
+
+            for (var i = 0; i< data.length; i++){
+                var record = data[i];
+                var td1 = '<td>'+record['Container #'].substr(4)+'</td>';
+                var td2 = '<td>'+record['Container Size Type']+'</td>';
+                var td4 = '<td>'+record['Quantity']+'</td>';
+                var td5 = '<td>'+record['Inland Point']+'</td>';
+                var td6 = '<td>'+record['Load Port']+'</td>';
+                var td7 = '<td>'+record['Unload Port']+'</td>';
+                var bt = '<td><a href="/truck/id/' + record['Container #'].substr(4) + '"><button type="button" class="btn btn-info">detail</button></a></td>'
+                var tr = '<tr>'+td1+td2+td4+td5+td6+td7+bt+'</tr>';
+                tr_list.push(tr);
+            }
+
+            var inbound_table = $("#outbound-table");
+            inbound_table.html(table);
+            inbound_table.append(table_head);
+            for (var i=0;i<tr_list.length;i++){
+                inbound_table.append(tr_list[i]);
+            }
+        })
+    })
+</script>
+
+        </div>
+    </div>
+</div>
+<script>
+$(function(){
+	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+		// 获取已激活的标签页的名称
+		var activeTab = $(e.target).text();
+		// 获取前一个激活的标签页的名称
+		var previousTab = $(e.relatedTarget).text();
+		$(".active-tab span").html(activeTab);
+		$(".previous-tab span").html(previousTab);
+
+	});
+});
+</script>
+
+{% endblock %}

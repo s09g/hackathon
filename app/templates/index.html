@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %} Homepage {% endblock %}
+
+
+{% block page_content %}
+<h1>
+    Hello,
+    {% if current_user.is_authenticated %}
+    {{ current_user.username  | capitalize }}
+        <br>
+       <h2> Your current role is {{ current_user.current_role() }}</h2>
+        {% if current_user.current_role().lower() == 'user' %}
+            <p>Please contact <a href="mailto:admin@example.com">administrator</a> to get your preference.</p>
+        {% else %}
+        <p>
+        You can get access to
+            <ul>
+                <li>
+                    <a href="{{ url_for('main.%s' % current_user.current_role().lower() ) }}">
+                        {{ current_user.current_role() }} dashboard
+                    </a>
+                </li>
+            </ul>
+
+        </p>
+        {% endif %}
+    {% else %}
+    Stranger
+    {% endif %}
+</h1>
+{% endblock %}
+
+
+
